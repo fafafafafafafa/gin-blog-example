@@ -20,35 +20,24 @@ type Model struct {
 	DeletedOn  int `json:"deleted_on"`
 }
 
-func init() {
+func Setup() {
 	var (
-		err                                               error
-		dbType, dbName, user, password, host, tablePrefix string
+		err error
 	)
-	fmt.Println("database init...")
-	sec, err := setting.Cfg.GetSection("database")
-	if err != nil {
-		log.Fatalf("Fail to get section 'database': %v", err)
-	}
-	dbType = sec.Key("TYPE").String()
-	dbName = sec.Key("NAME").String()
-	user = sec.Key("USER").String()
-	password = sec.Key("PASSWORD").String()
-	host = sec.Key("HOST").String()
-	tablePrefix = sec.Key("TABLE_PREFIX").String()
+	fmt.Println("models Setup...")
 
-	db, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		user,
-		password,
-		host,
-		dbName,
+	db, err = gorm.Open(setting.DatabaseSetting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		setting.DatabaseSetting.User,
+		setting.DatabaseSetting.Password,
+		setting.DatabaseSetting.Host,
+		setting.DatabaseSetting.Name,
 	))
 
 	if err != nil {
 		log.Fatalf("Fail to open 'database': %v", err)
 	}
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, DefaultTableName string) string {
-		return tablePrefix + DefaultTableName
+		return setting.DatabaseSetting.TablePrefix + DefaultTableName
 	}
 	db.SingularTable(true)       // 不加s
 	db.LogMode(true)             // 开启Logger，展示详细日志

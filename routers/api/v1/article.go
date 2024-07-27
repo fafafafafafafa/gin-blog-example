@@ -44,7 +44,7 @@ func GetArticles(c *gin.Context) {
 	if !valid.HasErrors() {
 		code = e.SUCCESS
 		data["total"] = models.GetArticlesTotal(maps)
-		data["list"] = models.GetArticles(util.GetPage(c), setting.PageSize, maps)
+		data["list"] = models.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
 	} else {
 		for _, err := range valid.Errors {
 			// log.Println(err.Key, err.Message)

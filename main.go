@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	_ "go-gin-example/docs"
+	"go-gin-example/models"
+	"go-gin-example/pkg/logging"
 	"go-gin-example/pkg/setting"
 	"go-gin-example/routers"
 	"log"
@@ -29,13 +31,19 @@ func main() {
 	// 	// logging.Info(fmt.Sprintf("Actual pid is %d", syscall.Getpid()))
 	// 	log.Printf("Actual pid is %d", syscall.Getpid())
 	// }
+
+	// 初始化
+	setting.Setup()
+	models.Setup()
+	logging.Setup()
+
 	r := routers.InitRouter()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	server := &http.Server{
-		Addr:           fmt.Sprintf(":%d", setting.HTTPPort),
+		Addr:           fmt.Sprintf(":%d", setting.ServerSetting.HttpPort),
 		Handler:        r,
-		ReadTimeout:    setting.ReadTimeout,
-		WriteTimeout:   setting.WriteTimeout,
+		ReadTimeout:    setting.ServerSetting.ReadTimeout,
+		WriteTimeout:   setting.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 

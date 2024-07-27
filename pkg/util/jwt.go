@@ -7,7 +7,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var jwtSecret = []byte(setting.JwtSecret) // 用于生成token的密钥
+var jwtSecret = []byte(setting.AppSetting.JwtSecret) // 用于生成token的密钥
 
 type Claims struct {
 	Username string `json:"username"`

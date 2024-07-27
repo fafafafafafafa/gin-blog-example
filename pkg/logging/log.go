@@ -29,7 +29,8 @@ const (
 	FATAL
 )
 
-func init() {
+func Setup() {
+	log.Println("logging Setup...")
 	filePath := getLogFileFullPath()
 	F = openLogFile(filePath)
 	// F 要写入日志的句柄
