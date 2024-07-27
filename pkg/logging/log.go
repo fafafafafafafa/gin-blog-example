@@ -31,8 +31,14 @@ const (
 
 func Setup() {
 	log.Println("logging Setup...")
-	filePath := getLogFileFullPath()
-	F = openLogFile(filePath)
+	filePath := getLogFilePath()
+	fileName := getLogFileName()
+
+	var err error
+	F, err = openLogFile(filePath, fileName)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	// F 要写入日志的句柄
 	// DefaultPrefix 定义每个生成的日志行的开头
 	// flag定义了日志记录属性

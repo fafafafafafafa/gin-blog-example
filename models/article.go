@@ -4,13 +4,14 @@ type Article struct {
 	Model
 	Tag Tag `json:"tag"`
 
-	TagId      int    `json:"tag_id" gorm:"index"`
-	Title      string `json:"title"`
-	Desc       string `json:"desc"`
-	Content    string `json:"content"`
-	CreatedBy  string `json:"created_by"`
-	ModifiedBy string `json:"modified_by"`
-	State      int    `json:"state"`
+	TagId         int    `json:"tag_id" gorm:"index"`
+	Title         string `json:"title"`
+	Desc          string `json:"desc"`
+	Content       string `json:"content"`
+	CreatedBy     string `json:"created_by"`
+	ModifiedBy    string `json:"modified_by"`
+	State         int    `json:"state"`
+	CoverImageUrl string `json:"cover_image_url"`
 }
 
 // 获取文章列表
@@ -33,12 +34,13 @@ func GetArticle(maps map[string]interface{}) (article Article) {
 func AddArticle(maps map[string]interface{}) bool {
 	db.Create(&Article{
 
-		TagId:     maps["tag_id"].(int),
-		Title:     maps["title"].(string),
-		Desc:      maps["desc"].(string),
-		Content:   maps["content"].(string),
-		CreatedBy: maps["created_by"].(string),
-		State:     maps["state"].(int),
+		TagId:         maps["tag_id"].(int),
+		Title:         maps["title"].(string),
+		Desc:          maps["desc"].(string),
+		Content:       maps["content"].(string),
+		CreatedBy:     maps["created_by"].(string),
+		State:         maps["state"].(int),
+		CoverImageUrl: maps["cover_image_url"].(string),
 	})
 	return true
 }
@@ -77,6 +79,7 @@ func ExistArticleByID(id int) bool {
 	return article.ID > 0
 }
 
+// 定时清理软删除的数据
 func CleanAllArticle() bool {
 	db.Unscoped().Where("deleted_on != ? ", 0).Delete(&Article{})
 

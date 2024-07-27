@@ -56,13 +56,13 @@ func GetTagTotal(maps interface{}) (count int) {
 
 func ExistTagByID(id int) bool {
 	var tag Tag
-	db.Select("id").Where("id=? AND deleted=?", id, 0).First(&tag)
+	db.Select("id").Where("id=? AND deleted_on=?", id, 0).First(&tag)
 	return tag.ID > 0
 }
 
 func ExistTagByName(name string) bool {
 	var tag Tag
-	db.Select("id").Where("name=? AND deleted=?", name, 0).First(&tag)
+	db.Select("id").Where("name=? AND deleted_on=?", name, 0).First(&tag)
 	return tag.ID > 0
 }
 

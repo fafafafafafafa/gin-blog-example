@@ -114,6 +114,7 @@ func AddArticle(c *gin.Context) {
 	content := c.Query("content")
 	created_by := c.Query("created_by")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
+	cover_image_url := c.Query("cover_image_url")
 
 	var tag_id int = -1
 	if arg := c.Query("tag_id"); arg != "" {
@@ -130,6 +131,8 @@ func AddArticle(c *gin.Context) {
 	valid.MaxSize(content, 65535, "content").Message("文章内容最大长度为65535字符")
 	valid.Required(created_by, "created_by").Message("文章创建人不为空")
 	valid.Range(state, 0, 1, "state").Message("文章状态state 只能为0或1")
+	valid.Required(cover_image_url, "cover_image_url").Message("文章封面url不为空")
+	valid.MaxSize(cover_image_url, 255, "cover_image_url").Message("文章封面url最大长度为255字符")
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
@@ -144,7 +147,7 @@ func AddArticle(c *gin.Context) {
 			maps["content"] = content
 			maps["created_by"] = created_by
 			maps["state"] = state
-
+			maps["cover_image_url"] = cover_image_url
 			models.AddArticle(maps)
 
 		} else {
@@ -184,6 +187,7 @@ func EditArticle(c *gin.Context) {
 	desc := c.Query("desc")
 	content := c.Query("content")
 	modified_by := c.Query("modified_by")
+	cover_image_url := c.Query("cover_image_url")
 
 	var state int = -1
 	if arg := c.Query("state"); arg != "" {
@@ -196,6 +200,7 @@ func EditArticle(c *gin.Context) {
 
 		valid.Min(tag_id, 1, "tag_id").Message("文章tag_id 最小为1")
 	}
+
 	valid.Min(id, 1, "id").Message("文章id 最小为1")
 	valid.Required(title, "title").Message("文章标题不为空")
 	valid.MaxSize(title, 100, "title").Message("文章标题最大长度为100字符")
@@ -205,6 +210,8 @@ func EditArticle(c *gin.Context) {
 	valid.MaxSize(content, 65535, "content").Message("文章内容最大长度为65535字符")
 	valid.Required(modified_by, "modified_by").Message("文章更改人不为空")
 	valid.MaxSize(modified_by, 100, "modified_by").Message("文章更改人最大长度为100字符")
+	valid.Required(cover_image_url, "cover_image_url").Message("文章封面url不为空")
+	valid.MaxSize(cover_image_url, 100, "cover_image_url").Message("文章封面url最大长度为100字符")
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
@@ -220,7 +227,7 @@ func EditArticle(c *gin.Context) {
 				maps["state"] = state
 				maps["tag_id"] = tag_id
 				maps["deleted_on"] = 0
-
+				maps["cover_image_url"] = cover_image_url
 				models.EditArticle(id, maps)
 
 			} else {
