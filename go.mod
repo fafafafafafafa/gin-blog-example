@@ -8,6 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-ini/ini v1.67.0
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.16
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0

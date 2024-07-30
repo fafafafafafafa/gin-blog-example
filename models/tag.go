@@ -1,5 +1,7 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type Tag struct {
 	Model
 
@@ -9,32 +11,33 @@ type Tag struct {
 	State      int    `json:"state"`
 }
 
-func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
-	return
+func GetTags(pageNum int, pageSize int, maps interface{}) ([]*Tag, error) {
+	var tags []*Tag
+	if err := db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags).Error; err != nil {
+		return nil, err
+	}
+	return tags, nil
 }
 
-func AddTag(name string, created_by string, state int) bool {
+func AddTag(name string, created_by string, state int) error {
 	var tag Tag = Tag{
 		Name:      name,
 		CreatedBy: created_by,
 		State:     state,
 	}
 
-	db.Create(&tag)
-	return true
+	err := db.Create(&tag).Error
+	return err
 }
 
-func EditTag(id int, data map[string]interface{}) bool {
-	db.Model(&Tag{}).Where("id=?", id).Updates(data)
-	return true
+func EditTag(id int, data map[string]interface{}) error {
+	err := db.Model(&Tag{}).Where("id=?", id).Updates(data).Error
+	return err
 }
 
-func DeleteTag(id int) bool {
-
-	db.Delete(&Tag{}, id)
-	return true
+func DeleteTag(id int) error {
+	err := db.Delete(&Tag{}, id).Error
+	return err
 }
 
 // // 回调函数
@@ -49,21 +52,30 @@ func DeleteTag(id int) bool {
 // 	return nil
 // }
 
-func GetTagTotal(maps interface{}) (count int) {
-	db.Model(&Tag{}).Where(maps).Count(&count)
-	return
+func GetTagTotal(maps interface{}) (int, error) {
+	var count int
+	err := db.Model(&Tag{}).Where(maps).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
-func ExistTagByID(id int) bool {
+func ExistTagByID(id int) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("id=? AND deleted_on=?", id, 0).First(&tag)
-	return tag.ID > 0
+	var err error
+	if err = db.Select("id").Where("id=? AND deleted_on=?", id, 0).First(&tag).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	return tag.ID > 0, nil
 }
 
-func ExistTagByName(name string) bool {
+func ExistTagByName(name string) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("name=? AND deleted_on=?", name, 0).First(&tag)
-	return tag.ID > 0
+	if err := db.Select("id").Where("name=? AND deleted_on=?", name, 0).First(&tag).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	return tag.ID > 0, nil
 }
 
 // 定时清理软删除的数据
